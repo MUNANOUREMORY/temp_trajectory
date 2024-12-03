@@ -1,0 +1,5 @@
+{
+    "clif2_path": "", // add "/" at the end
+    "filetype": "", // parquet or csv
+    "site": ""
+}
