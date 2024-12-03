@@ -1,0 +1,8 @@
+.DS_Store
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+temp_trajectory.Rproj
+config.json
+/output
