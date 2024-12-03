@@ -3,12 +3,28 @@ install.packages("radiant.data")
 library(radiant.data)
 install.packages("remotes")
 install.packages("flipTime")
+library(here)
+library(jsonlite)
 
-###################### User Input. ############################################
-tables_location <- 'C:/Users/manour/Desktop/mortality_model/'
-site <-'EU'
-file_type <- '.csv'
+###################### Load Config ############################################
+load_config <- function() {
+  json_path <- file.path( "config.json")
+  
+  if (file.exists(json_path)) {
+    config <- fromJSON(json_path)
+    print("Loaded configuration from config.json")
+  } else {
+    stop("Configuration file not found. Please create config.json.")
+  }
+  return(config)
+}
 
+# Load the configuration
+config <- load_config()
+
+tables_location <- config$clif2_path
+site <- config$site
+file_type <- paste0(".", config$filetype)
 
 ###################### Load data   ############################################
 # Check if the output directory exists; if not, create it
@@ -29,13 +45,15 @@ read_data <- function(file_path) {
 }
 
 #Load ICU Cohort and other files
-icu_cohort <- read_data(paste0(tables_location, "ICU_cohort.csv"))%>%
-  rename(hospitalization_id=encounter_id)
+icu_cohort <- read_data(here("output/intermediate/ICU_cohort.csv")) %>%
+  rename(hospitalization_id=encounter_id) %>%
+  mutate(hospitalization_id = as.character(hospitalization_id))
 
 # list of encounter ids from the icu cohort to right join on other clif tables
 keep_cohort <- icu_cohort %>% 
   select(hospitalization_id) %>%  
-  distinct()
+  distinct() %>%
+  mutate(hospitalization_id = as.character(hospitalization_id))
 
 #load vitals
 vitals <- read_data(paste0(tables_location, "clif_vitals", file_type)) %>% 
@@ -68,10 +86,11 @@ adt <- read_data(paste0(tables_location, "clif_adt", file_type)) %>%
 
 #filter vitals to vital_category temp_c
 vitals<- vitals%>%
-  filter(vital_category == "temp_c")
+  filter(vital_category == "temp_c") %>%
+  distinct() 
 
 #Merging datasets
-merged_data <- merge(vitals, adt, by = "hospitalization_id")
+merged_data <- merge(vitals, adt, by = "hospitalization_id", allow.cartesian = TRUE)
 merged_data <- merge(merged_data, hosp_patient, by = "hospitalization_id")
 merged_data <- inner_join(merged_data, icu_cohort, by = "hospitalization_id")
 
@@ -219,14 +238,14 @@ temp_traj_plot <- ggplot(table_temp_traj_cohort, aes(x = hour, y = avg_temperatu
     axis.text.x = element_text(angle = 45, hjust = 1),  # Adjust text angle and position
     plot.title = element_text(hjust = 0.5)  # Center the plot title
   )
-plot_file_path <- paste0(tables_location, "temp_trajectory/temp_traj_plot_", 
+plot_file_path <- paste0(here("output/temp_traj_plot_"), 
                          site, 
                          ".jpeg")
 # Save the plot
 ggsave(plot_file_path, plot = temp_traj_plot, width = 10, height = 6, dpi = 300)
 
 write.csv(table_temp_traj_cohort, 
-          paste0(tables_location, "temp_trajectory/table_temp_traj_cohort_", 
+          paste0(here("output/table_temp_traj_cohort_"), 
                  site, ".csv"), row.names = FALSE)
 
 table2_alg_summary <- temp_algorithm %>%
@@ -375,21 +394,17 @@ or_plot<-ggplot(graph_alg, aes(x = order, y = `Odds ratio`, color = order)) +
   coord_flip() +   
   facet_wrap(~ outcome)
 
-plot_file_path <- paste0(tables_location, 
-                         "temp_trajectory/OR_",
+plot_file_path <- paste0(here("output/OR_"),
                          site, ".jpeg")
 # Save the plot
 ggsave(plot_file_path, plot = or_plot, width = 10, height = 6, dpi = 300)
 
 # Save df_alg dataframe as CSV
-file_path <- paste0(tables_location, 
-                    "temp_trajectory/df_temptraj_72_post_icu_", 
+file_path <- paste0(here("output/df_temptraj_72_post_icu_"), 
                     site, ".csv")
 write.csv(df_alg, file = file_path, row.names = FALSE)
 
 # Save table2_alg dataframe as CSV
-file_path <- paste0(tables_location, 
-                    "temp_trajectory/table2_temptraj_72_post_icu_", 
+file_path <- paste0(here("output/table2_temptraj_72_post_icu_"), 
                     site, ".csv")
 write.csv(table2_alg, file = file_path, row.names = FALSE)
-

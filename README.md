@@ -14,7 +14,7 @@ You will need most recent icu_cohort.csv from mortality_model code.
 Follow the schema laid out in the RCLIF ERD for each of these tables.
 
 # **Setup instructions**
-- Step 1. Before running temperature_trajectory_analysis, make sure you have ran mortality_model code and have your icu_cohort.csv.
-* Step 2. Make sure to input site specific details at the top of the R file BEFORE running. No need to load config or any other file.
-+ Step 3. Run the temperature_trajectory_analysis_2.0.R analysis script. This script generates and saves aggregate results in the current directory.
-- Step 4. Please upload all outputs to [Box](https://app.box.com/folder/296487589366)
+* Step 1. Rename `config_template.json` to `config.json` and update the required details.
+* Step 2. Run `ICU_cohort_id_script_CLIF 2.0.R`. This script generates table1 and an intermediate dataset.
+* Step 3. Run `the temperature_trajectory_analysis_2.0.R` analysis script. This script generates and saves aggregate results in the current directory.
+* Step 4. Please upload all outputs to [Box](https://app.box.com/folder/296487589366)
