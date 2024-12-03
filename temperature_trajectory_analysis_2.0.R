@@ -34,9 +34,8 @@ icu_cohort <- read_data(paste0(tables_location, "ICU_cohort.csv"))%>%
 
 # list of encounter ids from the icu cohort to right join on other clif tables
 keep_cohort <- icu_cohort %>% 
-  select(encounter_id) %>%  
-  distinct()%>% 
-  rename(hospitalization_id = encounter_id)
+  select(hospitalization_id) %>%  
+  distinct()
 
 #load vitals
 vitals <- read_data(paste0(tables_location, "clif_vitals", file_type)) %>% 
