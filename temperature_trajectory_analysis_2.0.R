@@ -305,7 +305,7 @@ summary(glm(vent ~ HSR + HFR + HT + age_at_admission + sex_category + factor(rac
 summary(glm(death ~ HSR + HFR + HT + age_at_admission + sex_category + factor(race_category) + ethnicity_category, data = table_alg, family = "binomial"))$coefficients
 
 df_alg <- df_alg %>%
-  mutate(Features = rep(c("Intercept", "HSR", "HFR", "HT", "Age", "Male sex", "Asian", "Black", "Pacific Islander", "Other", "Unknown","White","Non-Hispanic", "Uknown"), times = 2))
+  mutate(Features = rep(c("Intercept", "HSR", "HFR", "HT", "Age", "Male sex", "Asian", "Black", "Pacific Islander", "Other", "Unknown","White","Non-Hispanic", "Unknown"), times = 2))
 
 
 # Calculate confidence intervals and odds ratios, and format p-values in df_alg
