@@ -143,10 +143,11 @@ temp_algorithm <- merged_data %>%
   rename(adm = hours_from_adm) %>%
   filter(!is.na(temperature)) %>%
   ungroup() %>%
-  mutate(traj1 = -0.89548 - 0.00298 * adm + 0.00010 * (adm^2), #quadratic equation for each traj 
-         traj2 = -0.00667 + 0.00050 * adm - 0.00001 * (adm^2),
-         traj3 = 1.35157 - 0.06946 * adm + 0.00065 * (adm^2),
-         traj4 = 1.22203 - 0.00590 * adm - 0.00007 * (adm^2)) %>%
+#Conatact Siva Bhavani for correct coefficients!!
+  mutate(traj1 = a1 + a2 * adm + a3 * (adm^2), #quadratic equation for each traj
+         traj2 = b1 + b2 * adm + b3 * (adm^2),
+         traj3 = c1 + c2 * adm + c3 * (adm^2),
+         traj4 = d1 + d2 * adm + d3 * (adm^2)) %>%
   group_by(hospitalization_id) %>%
   mutate(error1 = (temperature - traj1)^2,
          error2 = (temperature - traj2)^2,
